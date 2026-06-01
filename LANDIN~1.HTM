@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Patrimoine — Gérez vos investissements avec l'IA</title>
+  <meta name="description" content="Suivez ETF, actions, cryptos et matières premières. Analyses IA personnalisées, stratégie anti-émotions, profil investisseur." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #f7f4ee;
+      --card:     #f0ece3;
+      --fg:       #1a1612;
+      --muted:    #7a7060;
+      --rule:     #d8d0c0;
+      --accent:   #2a5f3e;
+      --accent-fg:#ffffff;
+      --bull:     #2a7a4b;
+      --bear:     #b83333;
+      --risk-med: #c87c1a;
+      --serif:    'Fraunces', Georgia, serif;
+      --sans:     'Inter', system-ui, sans-serif;
+      --mono:     'JetBrains Mono', monospace;
+    }
+
+    body { font-family: var(--sans); background: var(--bg); color: var(--fg); line-height: 1.6; font-size: 15px; }
+
+    /* ── Utils ── */
+    .serif    { font-family: var(--serif); }
+    .mono     { font-family: var(--mono); }
+    .container{ max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .text-center { text-align: center; }
+    .text-muted  { color: var(--muted); }
+    .text-accent { color: var(--accent); }
+    .text-bull   { color: var(--bull); }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(247,244,238,.95); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 20px;
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--fg); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); transition: color .2s; }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent); color: var(--accent-fg);
+      padding: 8px 18px; border-radius: 3px; text-decoration: none;
+      font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 600;
+      transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; }
+    .nav-login { font-size: .75rem; color: var(--muted); text-decoration: none; margin-right: 12px; }
+    .nav-login:hover { color: var(--fg); }
+    @media (max-width: 640px) { .nav-links, .nav-login { display: none; } }
+
+    /* ── Sections ── */
+    section { padding: 80px 20px; }
+    .section-label {
+      font-size: .65rem; text-transform: uppercase; letter-spacing: .15em;
+      color: var(--muted); margin-bottom: 12px; display: block;
+    }
+    h2.section-title { font-family: var(--serif); font-size: 2.2rem; font-weight: 700; color: var(--fg); line-height: 1.2; }
+    .section-sub { color: var(--muted); font-size: .9rem; margin-top: 12px; max-width: 520px; }
+    @media (max-width: 640px) { h2.section-title { font-size: 1.7rem; } }
+
+    /* ── Hero ── */
+    .hero {
+      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(220,210,190,.6), transparent), var(--bg);
+      padding: 100px 20px 110px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--rule); background: var(--card);
+      padding: 6px 14px; border-radius: 99px;
+      font-size: .72rem; color: var(--muted); margin-bottom: 24px;
+    }
+    .hero-badge span.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    h1 { font-family: var(--serif); font-size: 3.4rem; font-weight: 900; color: var(--fg); line-height: 1.1; margin-bottom: 20px; }
+    h1 em { font-style: normal; color: var(--accent); }
+    .hero-sub { font-size: 1.1rem; color: var(--muted); max-width: 580px; margin: 0 auto 36px; }
+    .hero-btns { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--fg); color: var(--bg);
+      padding: 12px 28px; border-radius: 3px; text-decoration: none;
+      font-size: .85rem; font-weight: 600; transition: opacity .2s;
+    }
+    .btn-primary:hover { opacity: .85; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--rule); color: var(--fg);
+      padding: 12px 28px; border-radius: 3px; text-decoration: none;
+      font-size: .85rem; transition: background .2s;
+    }
+    .btn-outline:hover { background: var(--card); }
+    .hero-note { font-size: .72rem; color: var(--muted); margin-top: 16px; }
+    @media (max-width: 640px) { h1 { font-size: 2.2rem; } .hero-sub { font-size: .95rem; } }
+
+    /* ── Stats ── */
+    .stats-bar { background: var(--card); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 36px 20px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 800px; margin: 0 auto; text-align: center; }
+    .stat-num { font-family: var(--serif); font-size: 2.4rem; font-weight: 800; color: var(--fg); }
+    .stat-label { font-size: .7rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+    @media (max-width: 640px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* ── Products ── */
+    .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+    .product-card {
+      border: 1px solid var(--rule); background: var(--card); border-radius: 3px;
+      padding: 20px; transition: border-color .2s;
+    }
+    .product-card:hover { border-color: rgba(42,95,62,.4); }
+    .product-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .product-ticker { font-family: var(--mono); font-size: .7rem; color: var(--muted); }
+    .product-name { font-size: .88rem; font-weight: 600; margin-top: 2px; }
+    .product-perf { font-size: .75rem; font-weight: 700; padding: 4px 8px; border-radius: 3px; }
+    .product-bottom { display: flex; align-items: center; justify-content: space-between; }
+    .product-cat { font-size: .7rem; border: 1px solid var(--rule); padding: 2px 8px; border-radius: 3px; color: var(--muted); }
+    .product-tag { font-size: .7rem; color: var(--muted); font-style: italic; }
+    .product-more {
+      border: 1px dashed var(--rule); background: rgba(240,236,227,.5); border-radius: 3px;
+      padding: 20px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; text-decoration: none; transition: border-color .2s;
+    }
+    .product-more:hover { border-color: rgba(42,95,62,.4); }
+    .product-more-icon { font-size: 1.8rem; margin-bottom: 10px; }
+    .product-more-title { font-size: .88rem; font-weight: 600; color: var(--fg); }
+    .product-more-sub { font-size: .72rem; color: var(--muted); margin-top: 4px; }
+    .product-more-link { font-size: .72rem; color: var(--accent); margin-top: 10px; }
+    @media (max-width: 860px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .products-grid { grid-template-columns: 1fr; } }
+
+    /* ── Features ── */
+    .features-section { background: var(--card); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
+    .feature-card {
+      border: 1px solid var(--rule); background: var(--bg); border-radius: 3px;
+      padding: 20px; transition: border-color .2s;
+    }
+    .feature-card:hover { border-color: rgba(42,95,62,.35); }
+    .feature-icon { width: 36px; height: 36px; border-radius: 3px; background: rgba(42,95,62,.1); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; font-size: 1rem; }
+    .feature-title { font-size: .85rem; font-weight: 600; margin-bottom: 6px; }
+    .feature-desc { font-size: .75rem; color: var(--muted); line-height: 1.55; }
+    @media (max-width: 860px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .features-grid { grid-template-columns: 1fr; } }
+
+    /* ── Coach section ── */
+    .coach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; max-width: 960px; margin: 0 auto; }
+    .coach-list { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .coach-list li { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; }
+    .check-icon { color: var(--accent); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .coach-card { border: 1px solid var(--rule); background: var(--card); border-radius: 3px; padding: 20px; }
+    .coach-card-header { display: flex; align-items: center; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); margin-bottom: 14px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bull); margin-left: auto; }
+    .coach-row { display: flex; justify-content: space-between; font-size: .75rem; margin-bottom: 10px; }
+    .coach-row-label { color: var(--muted); }
+    .coach-quote { font-size: .75rem; color: var(--muted); font-style: italic; line-height: 1.55; border-top: 1px solid var(--rule); padding-top: 12px; margin-top: 4px; }
+    @media (max-width: 700px) { .coach-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+    /* ── Pricing ── */
+    .pricing-section { background: var(--card); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 680px; margin: 0 auto 32px; }
+    .plan-card { border: 1px solid var(--rule); background: var(--bg); border-radius: 3px; padding: 28px; position: relative; }
+    .plan-card.featured { border: 2px solid var(--accent); }
+    .plan-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff; font-size: .68rem; padding: 3px 12px; border-radius: 99px; font-weight: 600; white-space: nowrap;
+    }
+    .plan-label { font-size: .65rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 14px; }
+    .plan-price { font-family: var(--serif); font-size: 3rem; font-weight: 800; color: var(--fg); }
+    .plan-per { font-size: .75rem; color: var(--muted); margin-top: 2px; margin-bottom: 4px; }
+    .plan-save { font-size: .75rem; color: var(--accent); font-weight: 600; margin-bottom: 20px; }
+    .plan-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 10px; border-radius: 3px; text-decoration: none;
+      font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 600;
+      transition: all .2s; cursor: pointer;
+    }
+    .plan-btn.outline { border: 1px solid var(--fg); color: var(--fg); background: transparent; }
+    .plan-btn.outline:hover { background: var(--fg); color: var(--bg); }
+    .plan-btn.filled { background: var(--accent); color: #fff; }
+    .plan-btn.filled:hover { opacity: .85; }
+    .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 32px; max-width: 520px; margin: 32px auto 0; text-align: left; }
+    .features-list li { display: flex; align-items: center; gap: 8px; font-size: .85rem; list-style: none; }
+    .features-list .ck { color: var(--accent); font-weight: 700; }
+    .pricing-note { font-size: .72rem; color: var(--muted); margin-top: 24px; }
+    @media (max-width: 540px) { .pricing-grid { grid-template-columns: 1fr; } .features-list { grid-template-columns: 1fr; } }
+
+    /* ── Testimonials ── */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .testimonial { border: 1px solid var(--rule); background: var(--card); border-radius: 3px; padding: 22px; }
+    .stars { color: var(--accent); font-size: .85rem; margin-bottom: 10px; letter-spacing: 2px; }
+    .testimonial-text { font-size: .84rem; font-style: italic; line-height: 1.65; margin-bottom: 14px; }
+    .testimonial-author { font-size: .75rem; font-weight: 600; }
+    .testimonial-role  { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+    @media (max-width: 700px) { .testimonials-grid { grid-template-columns: 1fr; } }
+
+    /* ── FAQ ── */
+    .faq-list { max-width: 640px; margin: 32px auto 0; }
+    .faq-item { border-bottom: 1px solid var(--rule); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-btn {
+      width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      padding: 18px 0; font-size: .88rem; font-weight: 600; color: var(--fg); font-family: var(--sans);
+    }
+    .faq-btn:hover { color: var(--accent); }
+    .faq-arrow { font-size: .75rem; color: var(--muted); flex-shrink: 0; transition: transform .2s; }
+    .faq-arrow.open { transform: rotate(90deg); }
+    .faq-body { font-size: .83rem; color: var(--muted); line-height: 1.65; padding-bottom: 16px; display: none; }
+    .faq-body.open { display: block; }
+
+    /* ── CTA final ── */
+    .cta-final { background: var(--fg); padding: 80px 20px; text-align: center; }
+    .cta-final h2 { font-family: var(--serif); font-size: 2.4rem; font-weight: 900; color: var(--bg); margin-bottom: 16px; line-height: 1.2; }
+    .cta-final p { color: rgba(247,244,238,.65); font-size: .9rem; max-width: 520px; margin: 0 auto 28px; }
+    .btn-cta-light {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg); color: var(--fg);
+      padding: 13px 32px; border-radius: 3px; text-decoration: none;
+      font-size: .88rem; font-weight: 600; transition: opacity .2s;
+    }
+    .btn-cta-light:hover { opacity: .85; }
+    .cta-note { font-size: .7rem; color: rgba(247,244,238,.4); margin-top: 12px; }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--rule); padding: 28px 20px; background: var(--bg); }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: .72rem; color: var(--muted); }
+    .footer-logo { font-family: var(--serif); font-weight: 700; color: var(--fg); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--fg); }
+
+    /* ── SVG icons ── */
+    .icon { width: 16px; height: 16px; display: inline-block; vertical-align: middle; }
+    .icon-lg { width: 20px; height: 20px; }
+    .icon-sm { width: 13px; height: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">Le Patrimoine</a>
+    <ul class="nav-links">
+      <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+      <li><a href="#produits">Produits</a></li>
+      <li><a href="#tarifs">Tarifs</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;">
+      <a class="nav-login" href="https://education-ai-guidefinancire.lovable.app/auth">Connexion</a>
+      <a class="nav-cta" href="https://education-ai-guidefinancire.lovable.app/auth?signup=true">
+        Essayer gratuitement →
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    Intelligence artificielle · Analyses en temps réel
+  </div>
+  <h1>Gérez vos investissements<br><em>sans stress, sans émotions.</em></h1>
+  <p class="hero-sub">ETF, actions, cryptos et matières premières analysés par l'IA. Définissez votre profil, construisez votre stratégie, adaptez-vous aux marchés — en toute sérénité.</p>
+  <div class="hero-btns">
+    <a class="btn-primary" href="https://education-ai-guidefinancire.lovable.app/auth?signup=true">
+      Commencer gratuitement
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a class="btn-outline" href="https://education-ai-guidefinancire.lovable.app">
+      Voir l'application
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
+  </div>
+  <p class="hero-note">Accès gratuit · Aucune carte requise · Premium dès 6,58 €/mois</p>
+</section>
+
+<!-- ── Stats ── -->
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div><div class="stat-num" data-target="55">0</div><div class="stat-label">Produits analysés</div></div>
+    <div><div class="stat-num">5</div><div class="stat-label">Catégories<br>ETF · Action · Crypto · Matières</div></div>
+    <div><div class="stat-num">8</div><div class="stat-label">Fonctions IA<br>Coach, analyse, comparateur…</div></div>
+    <div><div class="stat-num">100 %</div><div class="stat-label">Sans biais émotionnels<br>Décisions fondées sur les données</div></div>
+  </div>
+</div>
+
+<!-- ── Produits ── -->
+<section id="produits">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Les produits</span>
+      <h2 class="section-title serif">55 actifs décryptés en profondeur</h2>
+      <p class="section-sub" style="margin:12px auto 0;">Thèse d'investissement, historique de crise, fondamentaux, corrélations — tout ce qu'il faut pour décider en connaissance de cause.</p>
+    </div>
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-top">
+          <div><div class="product-ticker mono">IWDA</div><div class="product-name">iShares MSCI World</div></div>
+          <span class="product-perf" style="background:rgba(45,106,79,.12);color:#2D6A4F">+18,4 %</span>
+        </div>
+        <div class="product-bottom">
+          <span class="product-cat">ETF</span><span class="product-tag">Fond de portefeuille</span>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-top">
+          <div><div class="product-ticker mono">CSPX</div><div class="product-name">iShares Core S&amp;P 500</div></div>
+          <span class="product-perf" style="background:rgba(29,53,87,.1);color:#1D3557">+24,2 %</span>
+        </div>
+        <div class="product-bottom">
+          <span class="product-cat">ETF</span><span class="product-tag">Machine à composer</span>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-top">
+          <div><div class="product-ticker mono">BTC</div><div class="product-name">Bitcoin</div></div>
+          <span class="product-perf" style="background:rgba(244,162,97,.15);color:#c07a2a">+127 %</span>
+        </div>
+        <div class="product-bottom">
+          <span class="product-cat">Crypto</span><span class="product-tag">Actif alternatif</span>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-top">
+          <div><div class="product-ticker mono">GLD</div><div class="product-name">WisdomTree Physical Gold</div></div>
+          <span class="product-perf" style="background:rgba(201,168,76,.15);color:#a88830">+11,2 %</span>
+        </div>
+        <div class="product-bottom">
+          <span class="product-cat">Matières</span><span class="product-tag">Valeur refuge</span>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-top">
+          <div><div class="product-ticker mono">ASML</div><div class="product-name">ASML Holding</div></div>
+          <span class="product-perf" style="background:rgba(69,123,157,.12);color:#457B9D">+31 %</span>
+        </div>
+        <div class="product-bottom">
+          <span class="product-cat">Action</span><span class="product-tag">Champion technologique</span>
+        </div>
+      </div>
+      <a class="product-more" href="https://education-ai-guidefinancire.lovable.app">
+        <div class="product-more-icon">🌐</div>
+        <div class="product-more-title">+14 autres actifs</div>
+        <div class="product-more-sub">Nasdaq 100, LVMH, Nvidia, Alphabet, Schneider…</div>
+        <div class="product-more-link">Voir tous les produits →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Fonctionnalités ── -->
+<section id="fonctionnalites" class="features-section">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Fonctionnalités</span>
+      <h2 class="section-title serif">Tout ce dont vous avez besoin</h2>
+      <p class="section-sub" style="margin:12px auto 0;">Une plateforme complète, pensée pour l'investisseur individuel qui veut gérer son patrimoine comme un professionnel.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">🧠</div><div class="feature-title">Coach IA sans émotions</div><div class="feature-desc">Analyses fondées sur les données de marché et annonces politiques. Jamais influencé par la panique ou l'euphorie.</div></div>
+      <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Cours & historiques complets</div><div class="feature-desc">Prix en temps réel, graphiques historiques, drawdowns passés et comportement lors des crises.</div></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Corrélations entre actifs</div><div class="feature-desc">Visualisez comment vos produits évoluent ensemble. Diversifiez intelligemment et évitez les faux équilibres.</div></div>
+      <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title">Profil investisseur</div><div class="feature-desc">Définissez votre tolérance au risque, horizon et objectifs. L'app adapte chaque recommandation à votre situation.</div></div>
+      <div class="feature-card"><div class="feature-icon">💼</div><div class="feature-title">Suivi de portefeuille</div><div class="feature-desc">Ajoutez vos positions, suivez votre performance en temps réel et recevez des analyses hebdomadaires.</div></div>
+      <div class="feature-card"><div class="feature-icon">🔔</div><div class="feature-title">Alertes & Watchlist</div><div class="feature-desc">Soyez notifié sur les mouvements majeurs. Ne ratez plus jamais un point d'entrée ou une alerte de risque.</div></div>
+      <div class="feature-card"><div class="feature-icon">📈</div><div class="feature-title">Projections patrimoniales</div><div class="feature-desc">Simulez la croissance de votre patrimoine sur 5, 10, 20 ans selon différents scénarios de marché.</div></div>
+      <div class="feature-card"><div class="feature-icon">📓</div><div class="feature-title">Journal de trading</div><div class="feature-desc">Enregistrez vos décisions, annotez vos analyses et construisez une discipline d'investissement durable.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Coach IA ── -->
+<section>
+  <div class="coach-grid container">
+    <div>
+      <span class="section-label">La différence Le Patrimoine</span>
+      <h2 class="section-title serif">Un coach qui ne panique jamais</h2>
+      <p style="color:var(--muted);font-size:.88rem;margin-top:14px;line-height:1.7;">Les crises de marché génèrent des émotions — et les émotions coûtent cher. Notre IA analyse les données froides : macroéconomie, politique monétaire, flux institutionnels, actualités. Elle vous dit quoi faire, pas ce que vous avez envie d'entendre.</p>
+      <ul class="coach-list">
+        <li><span class="check-icon">✔</span> Analyse des annonces politiques et macro sans biais</li>
+        <li><span class="check-icon">✔</span> Recommandations adaptées à votre profil de risque</li>
+        <li><span class="check-icon">✔</span> Alertes proactives avant que le marché réagisse</li>
+        <li><span class="check-icon">✔</span> Stratégie long terme protégée des décisions impulsives</li>
+      </ul>
+    </div>
+    <div class="coach-card">
+      <div class="coach-card-header">
+        <span style="color:var(--accent);font-size:.85rem;">⚡</span>
+        <span style="font-size:.78rem;font-weight:600;">Coach IA · Analyse du jour</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;color:var(--muted);">
+          <div class="live-dot"></div> Live
+        </div>
+      </div>
+      <div class="coach-row"><span class="coach-row-label">Contexte macro</span><span style="color:var(--risk-med);font-weight:600;font-size:.75rem;">Fed hawkish, inflation stable</span></div>
+      <div class="coach-row"><span class="coach-row-label">Signal BTC</span><span style="color:var(--bull);font-weight:600;font-size:.75rem;">Accumulation institutionnelle</span></div>
+      <div class="coach-row"><span class="coach-row-label">ETF MSCI World</span><span style="color:var(--accent);font-weight:600;font-size:.75rem;">Zone de support testée</span></div>
+      <div class="coach-row"><span class="coach-row-label">Recommandation</span><span style="color:var(--fg);font-weight:600;font-size:.75rem;">Maintenir positions, DCA prudent</span></div>
+      <div class="coach-quote">"Résistez à la tentation de vendre. Les données fondamentales restent solides. Ce recul est une opportunité."</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ── -->
+<section id="tarifs" class="pricing-section">
+  <div class="container text-center">
+    <span class="section-label">Tarifs</span>
+    <h2 class="section-title serif">Simple et transparent</h2>
+    <p class="section-sub" style="margin:10px auto 40px;">Un seul abonnement. Toutes les fonctionnalités. Sans engagement.</p>
+    <div class="pricing-grid">
+      <div class="plan-card">
+        <div class="plan-label">Mensuel</div>
+        <div class="plan-price">11,99 €</div>
+        <div class="plan-per">par mois · Sans engagement</div>
+        <div style="height:22px;"></div>
+        <a class="plan-btn outline" href="https://education-ai-guidefinancire.lovable.app/abonnement">Choisir ce plan</a>
+      </div>
+      <div class="plan-card featured">
+        <span class="plan-badge">✦ Meilleure valeur</span>
+        <div class="plan-label">Annuel</div>
+        <div class="plan-price">79 €</div>
+        <div class="plan-per">par an · ≈ 6,58 € / mois</div>
+        <div class="plan-save">Économisez 34 %</div>
+        <a class="plan-btn filled" href="https://education-ai-guidefinancire.lovable.app/abonnement">Choisir ce plan →</a>
+      </div>
+    </div>
+    <ul class="features-list">
+      <li><span class="ck">✓</span> Suivi de portefeuille illimité</li>
+      <li><span class="ck">✓</span> Watchlist avec alertes consensus</li>
+      <li><span class="ck">✓</span> Analyses IA de portefeuille</li>
+      <li><span class="ck">✓</span> Comparateur de produits IA</li>
+      <li><span class="ck">✓</span> Alertes news majeures</li>
+      <li><span class="ck">✓</span> Corrélations entre actifs</li>
+      <li><span class="ck">✓</span> Projections de patrimoine</li>
+      <li><span class="ck">✓</span> Journal de trading enrichi</li>
+      <li><span class="ck">✓</span> Historique de prix complet</li>
+      <li><span class="ck">✓</span> Recommandations personnalisées</li>
+    </ul>
+    <p class="pricing-note">Paiement sécurisé par <strong>Stripe</strong> · Résiliation en 1 clic · Données hébergées en Europe</p>
+  </div>
+</section>
+
+<!-- ── Témoignages ── -->
+<section>
+  <div class="container">
+    <p class="section-label text-center">Conçu pour l'investisseur moderne</p>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"J'ai enfin arrêté de paniquer à chaque correction. Le coach m'a convaincu de tenir mes positions — et j'ai eu raison."</p>
+        <div class="testimonial-author">Thomas M.</div>
+        <div class="testimonial-role">Investisseur particulier · 3 ans d'expérience</div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Les corrélations entre mes ETF m'ont révélé que je n'étais pas aussi diversifié que je le croyais. Très instructif."</p>
+        <div class="testimonial-author">Céline R.</div>
+        <div class="testimonial-role">Ingénieure · Épargne long terme</div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"L'outil de projection m'a aidé à comprendre l'impact réel du DCA sur 15 ans. Motivant et très concret."</p>
+        <div class="testimonial-author">Marc D.</div>
+        <div class="testimonial-role">Entrepreneur · Gestion de patrimoine perso</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq" style="border-top:1px solid var(--rule);">
+  <div class="container text-center">
+    <span class="section-label">FAQ</span>
+    <h2 class="section-title serif">Questions fréquentes</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">Est-ce que l'app remplace un conseiller financier ?<span class="faq-arrow">▶</span></button>
+        <div class="faq-body">Non — Le Patrimoine est un outil d'aide à la décision, pas un service de conseil réglementé. Il vous apporte des analyses objectives et des données structurées pour prendre des décisions plus éclairées en toute autonomie.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">Quels produits financiers sont disponibles ?<span class="faq-arrow">▶</span></button>
+        <div class="faq-body">L'application couvre des ETF (MSCI World, S&P 500, Nasdaq 100…), des actions de qualité (ASML, Air Liquide, LVMH…), des cryptomonnaies (Bitcoin), des matières premières (or) et des indices. Plus de 55 produits analysés en profondeur.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">Comment fonctionne le Coach IA ?<span class="faq-arrow">▶</span></button>
+        <div class="faq-body">Le coach analyse les données de marché, les actualités économiques et politiques, et votre profil investisseur pour formuler des recommandations sans biais émotionnels. Il s'appuie sur des modèles de langage avancés.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">Puis-je annuler à tout moment ?<span class="faq-arrow">▶</span></button>
+        <div class="faq-body">Oui, sans engagement. L'abonnement mensuel peut être résilié à tout moment depuis votre espace personnel. Vous conservez l'accès jusqu'à la fin de la période déjà payée.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">Mes données financières sont-elles sécurisées ?<span class="faq-arrow">▶</span></button>
+        <div class="faq-body">Toutes vos données sont hébergées sur Supabase (infrastructure européenne), chiffrées en transit et au repos. Nous ne partageons jamais vos informations avec des tiers.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA final ── -->
+<section class="cta-final">
+  <h2>Commencez à investir<br>avec la tête, pas les tripes.</h2>
+  <p>Rejoignez les investisseurs qui ont choisi la rigueur analytique plutôt que les réactions émotionnelles. Accès gratuit, premium dès 6,58 €/mois.</p>
+  <a class="btn-cta-light" href="https://education-ai-guidefinancire.lovable.app/auth?signup=true">
+    Créer mon compte gratuitement
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+  <p class="cta-note">Aucune carte bancaire requise pour commencer</p>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">Le Patrimoine</span>
+    <div class="footer-links">
+      <a href="https://education-ai-guidefinancire.lovable.app/privacy">Confidentialité</a>
+      <a href="https://education-ai-guidefinancire.lovable.app/terms">CGU</a>
+      <a href="https://education-ai-guidefinancire.lovable.app">L'application</a>
+    </div>
+    <span>© 2026 Le Patrimoine · Tous droits réservés</span>
+  </div>
+</footer>
+
+<script>
+  // FAQ toggle
+  function toggleFaq(btn) {
+    const body = btn.nextElementSibling;
+    const arrow = btn.querySelector('.faq-arrow');
+    body.classList.toggle('open');
+    arrow.classList.toggle('open');
+  }
+
+  // Animated counters
+  function animateCounters() {
+    document.querySelectorAll('[data-target]').forEach(el => {
+      const target = parseInt(el.dataset.target);
+      let current = 0;
+      const step = target / 40;
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { el.textContent = target + '+'; clearInterval(timer); }
+        else { el.textContent = Math.floor(current); }
+      }, 30);
+    });
+  }
+
+  // Intersection observer for counters
+  const statsBar = document.querySelector('.stats-bar');
+  if (statsBar) {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { animateCounters(); obs.disconnect(); } }, { threshold: 0.3 });
+    obs.observe(statsBar);
+  }
+</script>
+</body>
+</html>
